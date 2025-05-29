@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu -->
+    <menuitem
+        id="menu_admissions_root"
+        name="Admissions"
+        sequence="10"/>
+
+    <!-- LimeSurvey Menu -->
+    <menuitem
+        id="menu_limesurvey"
+        name="LimeSurvey"
+        parent="menu_admissions_root"
+        sequence="10"/>
+
+    <!-- Forms Menu -->
+    <menuitem
+        id="menu_limesurvey_forms"
+        name="Referenced Forms"
+        parent="menu_limesurvey"
+        action="action_limesurvey_config"
+        sequence="10"/>
+</odoo> 

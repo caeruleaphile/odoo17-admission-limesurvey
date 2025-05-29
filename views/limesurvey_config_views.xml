@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_limesurvey_config_tree" model="ir.ui.view">
+        <field name="name">limesurvey.config.tree</field>
+        <field name="model">limesurvey.config</field>
+        <field name="arch" type="xml">
+            <tree default_order="open_date desc">
+                <field name="name"/>
+                <field name="remote_id"/>
+                <field name="form_type"/>
+                <field name="open_date"/>
+                <field name="close_date"/>
+                <field name="survey_url" widget="url"/>
+                <field name="active" widget="boolean_toggle"/>
+                <field name="connected"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_limesurvey_config_form" model="ir.ui.view">
+        <field name="name">limesurvey.config.form</field>
+        <field name="model">limesurvey.config</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="connect_to_limesurvey" 
+                            string="Connect" 
+                            type="object" 
+                            class="oe_highlight"
+                            invisible="connected"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Form Name"/>
+                        </h1>
+                    </div>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" type="object" name="toggle_active" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                        <button class="oe_stat_button" icon="fa-check" disabled="1">
+                            <field name="connected" widget="boolean_button"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="Form Information">
+                            <field name="remote_id"/>
+                            <field name="form_type"/>
+                            <field name="survey_url" widget="url"/>
+                        </group>
+                        <group string="Dates">
+                            <field name="open_date"/>
+                            <field name="close_date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Kanban View -->
+    <record id="view_limesurvey_config_kanban" model="ir.ui.view">
+        <field name="name">limesurvey.config.kanban</field>
+        <field name="model">limesurvey.config</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_order="open_date desc" sample="1">
+                <field name="name"/>
+                <field name="remote_id"/>
+                <field name="form_type"/>
+                <field name="open_date"/>
+                <field name="close_date"/>
+                <field name="active"/>
+                <field name="connected"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click">
+                            <div t-attf-class="text-bg-{{ record.form_type.raw_value == 'student' and 'success' or (record.form_type.raw_value == 'professional' and 'primary' or (record.form_type.raw_value == 'international' and 'warning' or 'secondary')) }} p-1 mb-2">
+                                <strong><field name="name"/></strong>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>ID:</strong> <field name="remote_id"/>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Type:</strong> <field name="form_type"/>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6">
+                                    <strong>Open:</strong> <field name="open_date"/>
+                                </div>
+                                <div class="col-6">
+                                    <strong>Close:</strong> <field name="close_date"/>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6">
+                                    <field name="active" widget="boolean_toggle"/>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <span t-if="record.connected.raw_value" class="text-success">✅</span>
+                                    <span t-else="" class="text-danger">❌</span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_limesurvey_config_search" model="ir.ui.view">
+        <field name="name">limesurvey.config.search</field>
+        <field name="model">limesurvey.config</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="remote_id"/>
+                <field name="form_type"/>
+                <field name="survey_url"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <separator/>
+                <filter string="Student Forms" name="student" domain="[('form_type', '=', 'student')]"/>
+                <filter string="Professional Forms" name="professional" domain="[('form_type', '=', 'professional')]"/>
+                <filter string="International Forms" name="international" domain="[('form_type', '=', 'international')]"/>
+                <filter string="Other Forms" name="other" domain="[('form_type', '=', 'other')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Form Type" name="group_by_form_type" context="{'group_by': 'form_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_limesurvey_config" model="ir.actions.act_window">
+        <field name="name">LimeSurvey Forms</field>
+        <field name="res_model">limesurvey.config</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first LimeSurvey form configuration!
+            </p>
+        </field>
+    </record>
+</odoo> 
