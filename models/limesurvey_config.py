@@ -50,11 +50,6 @@ class LimeSurveyConfig(models.Model):
         tracking=True,
         index=True,
     )
-    connected = fields.Boolean(
-        string='Connected',
-        default=False,
-        tracking=True,
-    )
 
     _sql_constraints = [
         ('unique_remote_id',
@@ -64,10 +59,4 @@ class LimeSurveyConfig(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        return super().create(vals_list)
-
-    def connect_to_limesurvey(self):
-        """Simulate connection to LimeSurvey."""
-        self.ensure_one()
-        self.connected = True
-        return True 
+        return super().create(vals_list) 

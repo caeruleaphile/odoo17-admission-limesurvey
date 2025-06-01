@@ -6,6 +6,7 @@
     'description': """
         This module allows to manage and automatically synchronize LimeSurvey forms in Odoo.
         Features:
+        - LimeSurvey server configuration
         - LimeSurvey form configuration
         - Automatic synchronization
         - Form tracking and monitoring
@@ -19,8 +20,12 @@
     'data': [
         'security/ir.model.access.csv',
         'views/limesurvey_config_views.xml',
+        'views/limesurvey_server_config_views.xml',
         'views/menu_views.xml',
     ],
+    'external_dependencies': {
+        'python': ['zeep'],
+    },
     'demo': [],
     'installable': True,
     'application': True,

@@ -8,16 +8,31 @@
 
     <!-- LimeSurvey Menu -->
     <menuitem
-        id="menu_limesurvey"
+        id="menu_limesurvey_root"
         name="LimeSurvey"
         parent="menu_admissions_root"
+        sequence="50"/>
+
+    <!-- Configuration Menu -->
+    <menuitem
+        id="menu_limesurvey_configuration"
+        name="Configuration"
+        parent="menu_limesurvey_root"
+        sequence="100"/>
+
+    <!-- Server Configuration Menu -->
+    <menuitem
+        id="menu_limesurvey_server_config"
+        name="Server Configurations"
+        parent="menu_limesurvey_configuration"
+        action="action_limesurvey_server_config"
         sequence="10"/>
 
     <!-- Forms Menu -->
     <menuitem
         id="menu_limesurvey_forms"
-        name="Referenced Forms"
-        parent="menu_limesurvey"
+        name="Forms"
+        parent="menu_limesurvey_root"
         action="action_limesurvey_config"
-        sequence="10"/>
+        sequence="20"/>
 </odoo> 

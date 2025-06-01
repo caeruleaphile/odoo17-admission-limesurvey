@@ -26,11 +26,4 @@ class TestLimeSurveyConfig(TransactionCase):
         self.assertEqual(self.test_form.survey_url, 'https://survey.example.com/12')
         self.assertEqual(self.test_form.open_date, self.open_date)
         self.assertEqual(self.test_form.close_date, self.close_date)
-        self.assertTrue(self.test_form.active)
-        self.assertFalse(self.test_form.connected)
-
-    def test_limesurvey_config_connection_flag(self):
-        """Test the connection simulation method."""
-        self.assertFalse(self.test_form.connected)
-        self.test_form.connect_to_limesurvey()
-        self.assertTrue(self.test_form.connected) 
+        self.assertTrue(self.test_form.active) 
