@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree View -->
+    <record id="view_limesurvey_server_config_tree" model="ir.ui.view">
+        <field name="name">limesurvey.server.config.tree</field>
+        <field name="model">limesurvey.server.config</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="api_url"/>
+                <field name="username"/>
+                <field name="connected" widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_limesurvey_server_config_form" model="ir.ui.view">
+        <field name="name">limesurvey.server.config.form</field>
+        <field name="model">limesurvey.server.config</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="connect" 
+                            string="Connect" 
+                            type="object" 
+                            class="oe_highlight"
+                            invisible="connected"/>
+                    <button name="disconnect" 
+                            string="Disconnect" 
+                            type="object"
+                            invisible="not connected"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Production Server" style="font-weight: bold;"/>
+                        </h1>
+                    </div>
+                    <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" icon="fa-check" disabled="1">
+                            <field name="connected" widget="boolean_button"/>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="Connection Information">
+                            <field name="api_url" placeholder="http://localhost/limesurvey" style="font-weight: bold;"/>
+                            <field name="username" placeholder="admin" style="font-weight: bold;"/>
+                            <field name="password" password="True"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_limesurvey_server_config_search" model="ir.ui.view">
+        <field name="name">limesurvey.server.config.search</field>
+        <field name="model">limesurvey.server.config</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="api_url"/>
+                <field name="username"/>
+                <filter string="Connected" name="connected" domain="[('connected', '=', True)]"/>
+                <filter string="Not Connected" name="not_connected" domain="[('connected', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_limesurvey_server_config" model="ir.actions.act_window">
+        <field name="name">LimeSurvey Servers</field>
+        <field name="res_model">limesurvey.server.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first LimeSurvey server configuration!
+            </p>
+            <p>
+                Configure your LimeSurvey server connection details to enable integration with Odoo.
+            </p>
+        </field>
+    </record>
+</odoo> 

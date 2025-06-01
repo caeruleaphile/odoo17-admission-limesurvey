@@ -13,7 +13,6 @@
                 <field name="close_date"/>
                 <field name="survey_url" widget="url"/>
                 <field name="active" widget="boolean_toggle"/>
-                <field name="connected"/>
             </tree>
         </field>
     </record>
@@ -24,13 +23,6 @@
         <field name="model">limesurvey.config</field>
         <field name="arch" type="xml">
             <form>
-                <header>
-                    <button name="connect_to_limesurvey" 
-                            string="Connect" 
-                            type="object" 
-                            class="oe_highlight"
-                            invisible="connected"/>
-                </header>
                 <sheet>
                     <div class="oe_title">
                         <h1>
@@ -40,9 +32,6 @@
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" type="object" name="toggle_active" icon="fa-archive">
                             <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
-                        </button>
-                        <button class="oe_stat_button" icon="fa-check" disabled="1">
-                            <field name="connected" widget="boolean_button"/>
                         </button>
                     </div>
                     <group>
@@ -77,7 +66,6 @@
                 <field name="open_date"/>
                 <field name="close_date"/>
                 <field name="active"/>
-                <field name="connected"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="oe_kanban_global_click">
@@ -94,19 +82,10 @@
                             </div>
                             <div class="row mt-2">
                                 <div class="col-6">
-                                    <strong>Open:</strong> <field name="open_date"/>
+                                    <strong>Opens:</strong> <field name="open_date"/>
                                 </div>
                                 <div class="col-6">
-                                    <strong>Close:</strong> <field name="close_date"/>
-                                </div>
-                            </div>
-                            <div class="row mt-2">
-                                <div class="col-6">
-                                    <field name="active" widget="boolean_toggle"/>
-                                </div>
-                                <div class="col-6 text-end">
-                                    <span t-if="record.connected.raw_value" class="text-success">✅</span>
-                                    <span t-else="" class="text-danger">❌</span>
+                                    <strong>Closes:</strong> <field name="close_date"/>
                                 </div>
                             </div>
                         </div>
