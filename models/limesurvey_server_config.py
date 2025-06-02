@@ -165,12 +165,15 @@ class LimeSurveyServerConfig(models.Model):
                 )
                 _logger.info('Successfully connected to LimeSurvey')
                 
+                # Synchroniser les formulaires après la connexion
+                self.sync_surveys()
+                
                 return {
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',
                     'params': {
                         'title': _('Success'),
-                        'message': _('Successfully connected to LimeSurvey server.'),
+                        'message': _('Successfully connected to LimeSurvey server and synchronized forms.'),
                         'type': 'success',
                         'sticky': False,
                     }
@@ -300,3 +303,126 @@ class LimeSurveyServerConfig(models.Model):
                 except (UserError, ValidationError):
                     pass
         return result 
+
+    def _call_api(self, method, params=None):
+        """
+        Appelle une méthode de l'API LimeSurvey.
+        
+        Args:
+            method (str): Nom de la méthode à appeler
+            params (list): Liste des paramètres à passer à la méthode
+            
+        Returns:
+            mixed: Résultat de l'appel API ou False en cas d'erreur
+        """
+        if params is None:
+            params = []
+            
+        try:
+            client = self._get_client()
+            _logger.info("Appel de la méthode %s avec les paramètres: %s", method, params)
+            
+            # Appel de la méthode de l'API
+            api_method = getattr(client, method)
+            result = api_method(*params)
+            
+            # Vérification du résultat
+            if isinstance(result, dict) and result.get('status') == 'error':
+                _logger.error("Erreur API LimeSurvey: %s", result.get('message'))
+                return False
+                
+            return result
+            
+        except xmlrpc.client.Fault as e:
+            _logger.error("Erreur XMLRPC lors de l'appel à %s: %s", method, str(e))
+            return False
+        except Exception as e:
+            _logger.error("Erreur lors de l'appel à %s: %s", method, str(e))
+            return False
+
+    def _get_session_key(self):
+        """Obtient une session key de l'API LimeSurvey."""
+        try:
+            client = self._get_client()
+            session_key = client.get_session_key(self.username, self.password)
+            if isinstance(session_key, str):
+                return session_key
+            _logger.error("Session key invalide reçue: %s", session_key)
+            return False
+        except Exception as e:
+            _logger.error("Erreur lors de l'obtention de la session key: %s", str(e))
+            return False
+
+    def _release_session_key(self, session_key):
+        """Libère une session key de l'API LimeSurvey."""
+        try:
+            client = self._get_client()
+            result = client.release_session_key(session_key)
+            if not result:
+                _logger.warning("Échec de la libération de la session key")
+            return result
+        except Exception as e:
+            _logger.error("Erreur lors de la libération de la session key: %s", str(e))
+            return False
+
+    def sync_surveys(self):
+        """Synchronise les formulaires depuis LimeSurvey vers Odoo"""
+        _logger.info("Début de la synchronisation des surveys")
+        for server in self:
+            if not server.connected:
+                _logger.warning("Serveur %s non connecté, synchronisation ignorée", server.name)
+                continue
+            
+            session_key = False
+            try:
+                # Connexion à l'API LimeSurvey
+                session_key = server._get_session_key()
+                if not session_key:
+                    _logger.error("Impossible d'obtenir une session key pour le serveur %s", server.name)
+                    continue
+
+                # Récupération de la liste des surveys
+                _logger.info("Appel de list_surveys pour le serveur %s", server.name)
+                surveys = server._call_api('list_surveys', [session_key])
+                
+                if not surveys:
+                    _logger.warning("Aucun survey trouvé sur le serveur %s", server.name)
+                    continue
+
+                _logger.info("Nombre de surveys trouvés : %s", len(surveys))
+                for survey in surveys:
+                    _logger.info("Traitement du survey : %s", survey.get('surveyls_title'))
+                    # Création ou mise à jour du survey dans Odoo
+                    survey_values = {
+                        'sid': survey.get('sid'),
+                        'title': survey.get('surveyls_title'),
+                        'language': survey.get('language'),
+                        'owner_id': survey.get('owner_id'),
+                        'active': survey.get('active') == 'Y',
+                        'server_id': server.id,
+                    }
+                    
+                    existing_survey = self.env['admission.survey.template'].search([
+                        ('sid', '=', survey.get('sid')),
+                        ('server_id', '=', server.id)
+                    ], limit=1)
+                    
+                    if existing_survey:
+                        _logger.info("Mise à jour du survey existant : %s", survey.get('surveyls_title'))
+                        existing_survey.write(survey_values)
+                    else:
+                        _logger.info("Création d'un nouveau survey : %s", survey.get('surveyls_title'))
+                        self.env['admission.survey.template'].create(survey_values)
+
+            except Exception as e:
+                _logger.error("Erreur lors de la synchronisation des surveys pour le serveur %s: %s", server.name, str(e))
+                raise
+            finally:
+                if session_key:
+                    try:
+                        server._release_session_key(session_key)
+                    except Exception as e:
+                        _logger.warning("Erreur lors de la libération de la session: %s", str(e))
+
+        _logger.info("Fin de la synchronisation des surveys")
+        return True 

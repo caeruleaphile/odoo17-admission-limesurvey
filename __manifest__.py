@@ -1,34 +1,41 @@
 {
     'name': 'Admission Hub',
     'version': '17.0.1.0.0',
-    'category': 'Website/Website',
-    'summary': 'Manage and synchronize LimeSurvey forms in Odoo',
-    'description': """
-        This module allows to manage and automatically synchronize LimeSurvey forms in Odoo.
-        Features:
-        - LimeSurvey server configuration
-        - LimeSurvey form configuration
-        - Automatic synchronization
-        - Form tracking and monitoring
-    """,
-    'author': 'bannour-imane',
-    'website': 'https://www.odoo.com',
+    'category': 'Education',
+    'summary': 'Gestion des admissions via LimeSurvey',
+    'sequence': 1,
+    'author': 'Your Company',
+    'website': 'https://www.yourcompany.com',
+    'license': 'LGPL-3',
     'depends': [
         'base',
         'mail',
     ],
     'data': [
         'security/ir.model.access.csv',
+        'views/menu_root.xml',
         'views/limesurvey_config_views.xml',
         'views/limesurvey_server_config_views.xml',
+        'views/survey_template_views.xml',
         'views/menu_views.xml',
     ],
-    'external_dependencies': {
-        'python': ['zeep'],
-    },
     'demo': [],
     'installable': True,
     'application': True,
     'auto_install': False,
-    'license': 'LGPL-3',
+    'assets': {},
+    'external_dependencies': {
+        'python': [],
+    },
+    'description': """
+Module de gestion des admissions intégré avec LimeSurvey.
+=======================================================
+
+Fonctionnalités principales :
+----------------------------
+* Synchronisation des formulaires LimeSurvey
+* Gestion des réponses
+* Suivi des candidatures
+* Interface moderne et intuitive
+""",
 } 

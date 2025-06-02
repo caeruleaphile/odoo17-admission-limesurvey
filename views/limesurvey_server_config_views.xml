@@ -30,6 +30,11 @@
                             string="Disconnect" 
                             type="object"
                             invisible="not connected"/>
+                    <button name="sync_surveys"
+                            string="Synchroniser les formulaires"
+                            type="object"
+                            class="oe_highlight"
+                            invisible="not connected"/>
                 </header>
                 <sheet>
                     <div class="oe_title">

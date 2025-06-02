@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vue Kanban -->
+    <record id="view_survey_template_kanban" model="ir.ui.view">
+        <field name="name">admission.survey.template.kanban</field>
+        <field name="model">admission.survey.template</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" class="o_kanban_small_column">
+                <field name="id"/>
+                <field name="title"/>
+                <field name="language"/>
+                <field name="active"/>
+                <field name="state"/>
+                <field name="survey_type"/>
+                <field name="response_count"/>
+                <field name="complete_response_count"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="public_url"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click">
+                            <div class="oe_kanban_details">
+                                <div class="o_kanban_record_top mb-0">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title">
+                                            <field name="title"/>
+                                        </strong>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_body">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <span class="text-muted">Type: </span>
+                                            <field name="survey_type" widget="badge"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <span class="text-muted">Langue: </span>
+                                            <field name="language"/>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6">
+                                            <span class="text-muted">Réponses: </span>
+                                            <field name="response_count"/>
+                                        </div>
+                                        <div class="col-6">
+                                            <span class="text-muted">Complètes: </span>
+                                            <field name="complete_response_count"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="state" widget="label_selection" 
+                                               options="{'classes': {'draft': 'secondary', 'active': 'success', 'expired': 'warning', 'closed': 'danger'}}"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="active" widget="boolean_toggle"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Vue Liste -->
+    <record id="view_survey_template_tree" model="ir.ui.view">
+        <field name="name">admission.survey.template.tree</field>
+        <field name="model">admission.survey.template</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="state == 'active'" 
+                  decoration-warning="state == 'expired'"
+                  decoration-danger="state == 'closed'"
+                  decoration-info="state == 'draft'">
+                <field name="title"/>
+                <field name="survey_type" optional="show"/>
+                <field name="language" optional="show"/>
+                <field name="response_count" sum="Total" optional="show"/>
+                <field name="complete_response_count" sum="Total" optional="show"/>
+                <field name="start_date" optional="show"/>
+                <field name="end_date" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'active'" 
+                       decoration-warning="state == 'expired'"
+                       decoration-danger="state == 'closed'"
+                       decoration-info="state == 'draft'"/>
+                <field name="active" widget="boolean_toggle" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vue Formulaire -->
+    <record id="view_survey_template_form" model="ir.ui.view">
+        <field name="name">admission.survey.template.form</field>
+        <field name="model">admission.survey.template</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,expired,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_public_url" type="object"
+                                class="oe_stat_button" icon="fa-globe"
+                                invisible="not public_url">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">URL Publique</span>
+                            </div>
+                        </button>
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="title" placeholder="Titre du formulaire"/>
+                        </h1>
+                        <h3>
+                            <field name="survey_type" widget="radio" options="{'horizontal': true}"/>
+                        </h3>
+                    </div>
+                    <group>
+                        <group name="main_info" string="Informations principales">
+                            <field name="sid"/>
+                            <field name="language"/>
+                            <field name="server_id"/>
+                            <field name="owner_id"/>
+                        </group>
+                        <group name="dates" string="Dates">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="responses" string="Réponses">
+                            <field name="response_count"/>
+                            <field name="complete_response_count"/>
+                        </group>
+                        <group name="access" string="Accès">
+                            <field name="public_url" widget="url"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description" 
+                                   placeholder="Description du formulaire..."
+                                   options="{'collaborative': true}"/>
+                        </page>
+                        <page string="Statistiques" name="statistics">
+                            <group>
+                                <group string="Informations techniques">
+                                    <field name="create_date" readonly="1"/>
+                                    <field name="write_date" readonly="1"/>
+                                    <field name="create_uid" readonly="1"/>
+                                    <field name="write_uid" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vue Recherche -->
+    <record id="view_survey_template_search" model="ir.ui.view">
+        <field name="name">admission.survey.template.search</field>
+        <field name="model">admission.survey.template</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="title"/>
+                <field name="survey_type"/>
+                <field name="language"/>
+                <field name="server_id"/>
+                <filter string="Actifs" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archivés" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Brouillons" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="En cours" name="active_state" domain="[('state', '=', 'active')]"/>
+                <filter string="Expirés" name="expired" domain="[('state', '=', 'expired')]"/>
+                <filter string="Fermés" name="closed" domain="[('state', '=', 'closed')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter string="Type" name="group_by_type" context="{'group_by': 'survey_type'}"/>
+                    <filter string="État" name="group_by_state" context="{'group_by': 'state'}"/>
+                    <filter string="Serveur" name="group_by_server" context="{'group_by': 'server_id'}"/>
+                    <filter string="Langue" name="group_by_language" context="{'group_by': 'language'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_survey_template" model="ir.actions.act_window">
+        <field name="name">Formulaires LimeSurvey</field>
+        <field name="res_model">admission.survey.template</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="search_view_id" ref="view_survey_template_search"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Aucun formulaire LimeSurvey trouvé
+            </p>
+            <p>
+                Les formulaires seront automatiquement synchronisés depuis votre serveur LimeSurvey.
+            </p>
+        </field>
+    </record>
+</odoo> 

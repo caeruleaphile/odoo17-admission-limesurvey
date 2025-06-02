@@ -1,38 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Main Menu -->
-    <menuitem
-        id="menu_admissions_root"
-        name="Admissions"
-        sequence="10"/>
+    <!-- Menu Configuration -->
+    <menuitem id="menu_admission_hub_config"
+              name="Configuration"
+              parent="menu_admission_hub_root"
+              sequence="100"/>
 
-    <!-- LimeSurvey Menu -->
-    <menuitem
-        id="menu_limesurvey_root"
-        name="LimeSurvey"
-        parent="menu_admissions_root"
-        sequence="50"/>
+    <!-- Menu Formulaires -->
+    <menuitem id="menu_survey_template"
+              name="Formulaires"
+              parent="menu_admission_hub_root"
+              action="action_survey_template"
+              sequence="20"/>
 
-    <!-- Configuration Menu -->
-    <menuitem
-        id="menu_limesurvey_configuration"
-        name="Configuration"
-        parent="menu_limesurvey_root"
-        sequence="100"/>
-
-    <!-- Server Configuration Menu -->
-    <menuitem
-        id="menu_limesurvey_server_config"
-        name="Server Configurations"
-        parent="menu_limesurvey_configuration"
-        action="action_limesurvey_server_config"
-        sequence="10"/>
-
-    <!-- Forms Menu -->
-    <menuitem
-        id="menu_limesurvey_forms"
-        name="Forms"
-        parent="menu_limesurvey_root"
-        action="action_limesurvey_config"
-        sequence="20"/>
+    <!-- Sous-menu Configuration LimeSurvey -->
+    <menuitem id="menu_limesurvey_config"
+              name="Serveurs LimeSurvey"
+              parent="menu_admission_hub_config"
+              action="action_limesurvey_server_config"
+              sequence="10"/>
 </odoo> 
